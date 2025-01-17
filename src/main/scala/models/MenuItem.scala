@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Luke A Jones
+ * Copyright 2025 Luke A Jones
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,9 @@
 
 package models
 
-sealed trait MenuItem {
-  val name: String
-  val price: BigDecimal
-  val isHot: Boolean
-  val isFood: Boolean
-}
+case class MenuItem(name: String, price: BigDecimal, isHot: Boolean, isFood: Boolean)
 
-case class Drink(name: String, price: BigDecimal, isHot: Boolean) extends MenuItem {
-  override val isFood: Boolean = false
-}
-
-object Coffee extends Drink("Coffee", 1, true)
-object Cola extends Drink("Cola", 0.5, false)
-
-case class Food(name: String, price: BigDecimal, isHot: Boolean) extends MenuItem {
-  override val isFood: Boolean = true
-}
-
-object CheeseSandwich extends Food("Cheese Sandwich", 2.0, false)
-object SteakSandwich extends Food("Steak Sandwich", 4.5, true)
+object Coffee extends MenuItem(name = "Coffee", price = 1.0, isHot = true, isFood = false)
+object Cola extends MenuItem(name = "Cola", price = 0.5, isHot = false, isFood = false)
+object CheeseSandwich extends MenuItem(name = "Cheese Sandwich", price = 2.0, isHot = false, isFood = true)
+object SteakSandwich extends MenuItem(name = "Steak Sandwich", price = 4.5, isHot = true, isFood = true)

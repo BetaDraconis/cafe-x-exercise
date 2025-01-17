@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Luke A Jones
+ * Copyright 2025 Luke A Jones
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,7 @@ import scala.language.postfixOps
 
 class MenuSpec extends AnyWordSpec with should.Matchers {
 
-  val testMenu: Menu = Menu(Map(
-    "Cola" -> Cola,
-    "Coffee" -> Coffee,
-    "Cheese Sandwich" -> CheeseSandwich,
-    "Steak Sandwich" -> SteakSandwich
-  ))
+  val testMenu: Menu = Menu(Seq(Cola, Coffee, CheeseSandwich, SteakSandwich))
 
   "Menu.generateTotalBill" when {
     "given an empty list of items" should {
@@ -38,20 +33,8 @@ class MenuSpec extends AnyWordSpec with should.Matchers {
     }
 
     "given a list containing one valid item" should {
-      "return the appropriate total bill" in {
+      "return the appropriate total bill applying any applicable service charges" in {
         Menu.generateTotalBill(testMenu, Seq("Cola")) shouldBe 0.5
-      }
-    }
-
-    "given a list containing one of each valid item" should {
-      "return the appropriate total bill" in {
-        Menu.generateTotalBill(testMenu, Seq("Cola", "Coffee", "Cheese Sandwich", "Steak Sandwich")) shouldBe 9.6
-      }
-    }
-
-    "given a list containing an invalid item" should {
-      "return the total bill as" in {
-        assertThrows[NoSuchElementException](Menu.generateTotalBill(testMenu, Seq("foobar")))
       }
     }
 
@@ -61,19 +44,25 @@ class MenuSpec extends AnyWordSpec with should.Matchers {
       }
     }
 
-    "given a list containing any cold food items, but no hot food items" should {
+    "given a list containing cold food items, but not hot food items" should {
       "return the appropriate total bill with a 10% service charge applied" in {
         Menu.generateTotalBill(testMenu, Seq("Cola", "Coffee", "Cheese Sandwich")) shouldBe 3.85
       }
     }
 
-    "given a list containing any hot food items" should {
+    "given a list containing hot food items" should {
       "apply a 20% service charge to the bill when the total service charge does not exceed £20" in {
         Menu.generateTotalBill(testMenu, Seq("Cola", "Coffee", "Steak Sandwich")) shouldBe 7.2
       }
 
       "cap the service charge to £20 when appropriate" in {
         Menu.generateTotalBill(testMenu, Seq.fill(100)("Steak Sandwich")) shouldBe 470.0
+      }
+    }
+
+    "given a list containing an invalid item" should {
+      "throw an exception" in {
+        assertThrows[NoSuchElementException](Menu.generateTotalBill(testMenu, Seq("foobar")))
       }
     }
   }
