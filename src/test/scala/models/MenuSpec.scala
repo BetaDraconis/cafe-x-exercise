@@ -36,5 +36,23 @@ class MenuSpec extends AnyWordSpec with should.Matchers {
         Menu.generateTotalBill(testMenu, Nil) shouldBe 0
       }
     }
+
+    "given a list containing one valid item" should {
+      "return the total bill as the price of that item" in {
+        Menu.generateTotalBill(testMenu, Seq("Cola")) shouldBe 0.5
+      }
+    }
+
+    "given a list containing one of each valid item" should {
+      "return the total bill appropriately" in {
+        Menu.generateTotalBill(testMenu, Seq("Cola", "Coffee", "Cheese Sandwich", "Steak Sandwich")) shouldBe 8.0
+      }
+    }
+
+    "given a list containing an invalid item" should {
+      "return the total bill as" in {
+        assertThrows[NoSuchElementException](Menu.generateTotalBill(testMenu, Seq("foobar")))
+      }
+    }
   }
 }
