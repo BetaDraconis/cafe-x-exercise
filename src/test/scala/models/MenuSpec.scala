@@ -24,10 +24,10 @@ import scala.language.postfixOps
 class MenuSpec extends AnyWordSpec with should.Matchers {
 
   val testMenu: Menu = Menu(Map(
-    "Cola" -> 0.5,
-    "Coffee" -> 1.0,
-    "Cheese Sandwich" -> 2.0,
-    "Steak Sandwich" -> 4.5
+    "Cola" -> Cola,
+    "Coffee" -> Coffee,
+    "Cheese Sandwich" -> CheeseSandwich,
+    "Steak Sandwich" -> SteakSandwich
   ))
 
   "Menu.generateTotalBill" when {
@@ -38,20 +38,42 @@ class MenuSpec extends AnyWordSpec with should.Matchers {
     }
 
     "given a list containing one valid item" should {
-      "return the total bill as the price of that item" in {
+      "return the appropriate total bill" in {
         Menu.generateTotalBill(testMenu, Seq("Cola")) shouldBe 0.5
       }
     }
 
     "given a list containing one of each valid item" should {
-      "return the total bill appropriately" in {
-        Menu.generateTotalBill(testMenu, Seq("Cola", "Coffee", "Cheese Sandwich", "Steak Sandwich")) shouldBe 8.0
+      "return the appropriate total bill" in {
+        Menu.generateTotalBill(testMenu, Seq("Cola", "Coffee", "Cheese Sandwich", "Steak Sandwich")) shouldBe 9.6
       }
     }
 
     "given a list containing an invalid item" should {
       "return the total bill as" in {
         assertThrows[NoSuchElementException](Menu.generateTotalBill(testMenu, Seq("foobar")))
+      }
+    }
+
+    "given a list containing only drink items" should {
+      "return the appropriate total bill without a service charge applied" in {
+        Menu.generateTotalBill(testMenu, Seq("Cola", "Coffee")) shouldBe 1.5
+      }
+    }
+
+    "given a list containing any cold food items, but no hot food items" should {
+      "return the appropriate total bill with a 10% service charge applied" in {
+        Menu.generateTotalBill(testMenu, Seq("Cola", "Coffee", "Cheese Sandwich")) shouldBe 3.85
+      }
+    }
+
+    "given a list containing any hot food items" should {
+      "apply a 20% service charge to the bill when the total service charge does not exceed £20" in {
+        Menu.generateTotalBill(testMenu, Seq("Cola", "Coffee", "Steak Sandwich")) shouldBe 7.2
+      }
+
+      "cap the service charge to £20 when appropriate" in {
+        Menu.generateTotalBill(testMenu, Seq.fill(100)("Steak Sandwich")) shouldBe 470.0
       }
     }
   }
